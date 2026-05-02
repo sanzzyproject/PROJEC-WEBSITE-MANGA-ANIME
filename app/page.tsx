@@ -7,6 +7,10 @@ import { Loader2, Search, SlidersHorizontal, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,6 +60,15 @@ export default function Home() {
     let displayContent = null;
 
     if (activeTab === 'All') {
+        const allItems = categories.flatMap(c => c.items);
+        const uniqueItemsMap = new Map();
+        for (const item of allItems) {
+            if (!uniqueItemsMap.has(item.title)) {
+                uniqueItemsMap.set(item.title, item);
+            }
+        }
+        const recommendations = Array.from(uniqueItemsMap.values()).slice(0, 15);
+
         displayContent = (
             <motion.div 
                 className="space-y-8 pb-32"
@@ -63,6 +76,60 @@ export default function Home() {
                 initial="hidden"
                 animate="show"
             >
+                {/* Recommendation Slider */}
+                {recommendations.length > 0 && (
+                    <motion.div variants={itemVariants} className="space-y-4 mt-2">
+                        <div className="flex items-center justify-between px-6">
+                            <h2 className="text-2xl font-black text-white">Recommendations</h2>
+                            <button className="text-sm font-bold text-[#3AC8BA]">View All</button>
+                        </div>
+                        <div className="w-full relative">
+                            <Swiper
+                                effect={'coverflow'}
+                                grabCursor={true}
+                                centeredSlides={true}
+                                slidesPerView={'auto'}
+                                coverflowEffect={{
+                                    rotate: 50,
+                                    stretch: 0,
+                                    depth: 100,
+                                    modifier: 1,
+                                    slideShadows: true,
+                                }}
+                                loop={true}
+                                autoplay={{
+                                    delay: 3000,
+                                    disableOnInteraction: false,
+                                }}
+                                modules={[EffectCoverflow, Autoplay]}
+                                className="w-full pb-8"
+                            >
+                                {recommendations.map((manga, i) => (
+                                    <SwiperSlide key={i} className="!w-[240px] !h-[340px]">
+                                        <Link href={`/manga?url=${encodeURIComponent(manga.link)}`} className="w-full h-full rounded-3xl overflow-hidden relative group block">
+                                            <img src={manga.thumb} alt={manga.title} className="absolute inset-0 w-full h-full object-cover" />
+                                            {/* Gradient overlay similar to Billie Eilish UI */}
+                                            <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-[#13151A] via-[rgba(19,21,26,0.6)] to-transparent"></div>
+                                            <div className="absolute inset-x-0 bottom-0 p-5 z-10 flex flex-col justify-end h-full">
+                                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20">
+                                                    <h3 className="font-bold text-white line-clamp-1 drop-shadow-md text-center">{manga.title}</h3>
+                                                    {manga.desc && (
+                                                        <p className="text-xs text-white/80 line-clamp-1 font-medium mt-1 text-center drop-shadow-md flex items-center justify-center gap-1">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#3AC8BA] inline-block"></span>
+                                                            {manga.desc.substring(0, 20)}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="absolute top-4 right-4 bg-[#3AC8BA] text-[#13151A] text-xs font-black px-3 py-1.5 rounded-full shadow-lg">HOT</div>
+                                        </Link>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        </div>
+                    </motion.div>
+                )}
+
                 {categories.map((cat, idx) => {
                     // Different layout based on index % 3
                     const layoutType = idx % 3;
@@ -75,9 +142,9 @@ export default function Home() {
                                     <h2 className="text-xl font-black text-white">{cat.category}</h2>
                                     <button onClick={() => setActiveTab(cat.category)} className="text-sm font-bold text-[#3AC8BA]">See All</button>
                                 </div>
-                                <div className="flex overflow-x-auto gap-4 px-6 pb-4 hide-scrollbar snap-x">
+                                <div className="flex overflow-x-auto gap-4 px-6 pb-4 hide-scrollbar snap-x scroll-pl-6">
                                     {cat.items.map((manga, i) => (
-                                        <div key={i} className="min-w-[160px] max-w-[160px] shrink-0 snap-center">
+                                        <div key={i} className="min-w-[160px] max-w-[160px] shrink-0 snap-start">
                                             <MangaCard {...manga} />
                                         </div>
                                     ))}
@@ -183,12 +250,12 @@ export default function Home() {
 
             {/* Categories Horizontal Tabs */}
             <div className="py-2">
-                <div className="flex overflow-x-auto gap-3 px-6 hide-scrollbar snap-x">
+                <div className="flex overflow-x-auto gap-3 px-6 hide-scrollbar snap-x scroll-pl-6">
                     {availableTabs.map(tab => (
                         <button 
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2.5 rounded-full font-bold text-sm shrink-0 snap-center transition-colors ${activeTab === tab ? 'bg-[#3AC8BA] text-[#13151A]' : 'bg-transparent text-gray-400 hover:text-white hover:bg-[#1A1D24]'}`}
+                            className={`px-5 py-2.5 rounded-full font-bold text-sm shrink-0 snap-start transition-colors ${activeTab === tab ? 'bg-[#3AC8BA] text-[#13151A]' : 'bg-transparent text-gray-400 hover:text-white hover:bg-[#1A1D24]'}`}
                         >
                             {tab}
                         </button>
@@ -199,8 +266,37 @@ export default function Home() {
 
             {/* Content */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-32 space-y-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#3AC8BA]" />
+                <div className="space-y-8 pb-32">
+                    <div className="px-6 space-y-3 mt-2">
+                        <div className="w-48 h-8 rounded-xl shimmer mb-2"></div>
+                        <div className="flex overflow-x-auto gap-4 hide-scrollbar snap-x scroll-pl-6 px-6 -mx-6">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="min-w-[240px] h-[340px] rounded-3xl shimmer shrink-0 snap-start"></div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between px-6">
+                            <div className="w-32 h-7 rounded-lg shimmer"></div>
+                            <div className="w-16 h-4 rounded-lg shimmer"></div>
+                        </div>
+                        <div className="flex overflow-x-auto gap-4 px-6 hide-scrollbar snap-x scroll-pl-6">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="min-w-[160px] h-[240px] rounded-2xl shimmer shrink-0 snap-start"></div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-3 px-6">
+                        <div className="flex items-center justify-between">
+                            <div className="w-32 h-7 rounded-lg shimmer"></div>
+                            <div className="w-16 h-4 rounded-lg shimmer"></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="w-full h-[240px] rounded-2xl shimmer"></div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             ) : error ? (
                 <div className="px-6 py-10">
@@ -219,6 +315,15 @@ export default function Home() {
                 .hide-scrollbar {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
+                }
+                .shimmer {
+                    background: linear-gradient(90deg, #1A1D24 25%, #252A36 50%, #1A1D24 75%);
+                    background-size: 200% 100%;
+                    animation: shimmer 1.5s infinite;
+                }
+                @keyframes shimmer {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
                 }
             `}</style>
         </div>
