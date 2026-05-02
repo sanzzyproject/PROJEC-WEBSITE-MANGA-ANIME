@@ -77,10 +77,11 @@ export default function Home() {
                                 </div>
                                 <div className="flex overflow-x-auto gap-4 px-6 pb-4 hide-scrollbar snap-x">
                                     {cat.items.map((manga, i) => (
-                                        <div key={i} className="min-w-[160px] max-w-[160px] shrink-0 snap-start">
+                                        <div key={i} className="min-w-[160px] max-w-[160px] shrink-0 snap-center">
                                             <MangaCard {...manga} />
                                         </div>
                                     ))}
+                                    <div className="w-2 shrink-0"></div>
                                 </div>
                             </motion.div>
                         );
@@ -187,11 +188,12 @@ export default function Home() {
                         <button 
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2.5 rounded-full font-bold text-sm shrink-0 snap-start transition-colors ${activeTab === tab ? 'bg-[#3AC8BA] text-[#13151A]' : 'bg-transparent text-gray-400 hover:text-white hover:bg-[#1A1D24]'}`}
+                            className={`px-5 py-2.5 rounded-full font-bold text-sm shrink-0 snap-center transition-colors ${activeTab === tab ? 'bg-[#3AC8BA] text-[#13151A]' : 'bg-transparent text-gray-400 hover:text-white hover:bg-[#1A1D24]'}`}
                         >
                             {tab}
                         </button>
                     ))}
+                    <div className="w-2 shrink-0"></div>
                 </div>
             </div>
 

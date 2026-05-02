@@ -126,7 +126,10 @@ export async function scrapeChapter(url: string) {
     $('.chapter-image img, #chimg img, #chapter_imgs img, .reader-area img').each((i, el) => {
         let src = $(el).attr('src') || $(el).attr('data-src');
         if (src && src.startsWith('http')) {
-            images.push(src);
+            // Filter out ads which are mostly GIF formats
+            if (!src.toLowerCase().includes('.gif')) {
+                images.push(src);
+            }
         }
     });
 
