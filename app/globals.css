@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --animate-bounce-text: bounce-text 4s ease-in-out infinite alternate;
+  
+  @keyframes bounce-text {
+    0%, 15% { transform: translateX(0); }
+    85%, 100% { transform: translateX(calc(-100% + 100cqw)); }
+  }
+}
+
+.animate-bounce-text {
+  animation: bounce-text 4s ease-in-out infinite alternate;
+  /* Add container-type for cqw to work properly relative to parent container */
+}
+
+/* Base style for any container using bounce text */
+.bounce-container {
+  container-type: inline-size;
+}

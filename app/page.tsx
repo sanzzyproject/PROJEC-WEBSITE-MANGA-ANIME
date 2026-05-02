@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { MangaCard } from '@/components/MangaCard';
+import { ScrollingTitle } from '@/components/ScrollingTitle';
 import { Loader2, Search, SlidersHorizontal, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -112,9 +113,7 @@ export default function Home() {
                                             <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-[#13151A] via-[rgba(19,21,26,0.6)] to-transparent"></div>
                                             <div className="absolute inset-x-0 bottom-0 p-5 z-10 flex flex-col justify-end h-full">
                                                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20">
-                                                    <div className="title-container">
-                                                        <h3 className="font-bold text-white title-bounce drop-shadow-md text-center">{manga.title}</h3>
-                                                    </div>
+                                                    <ScrollingTitle text={manga.title} className="font-bold text-white drop-shadow-md text-center" />
                                                     {manga.desc && (
                                                         <p className="text-xs text-white/80 line-clamp-1 font-medium mt-1 text-center drop-shadow-md flex items-center justify-center gap-1">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-[#3AC8BA] inline-block"></span>
@@ -186,9 +185,7 @@ export default function Home() {
                                                 <Image src={manga.thumb} alt={manga.title} fill className="object-cover rounded-xl group-hover:scale-105 transition-transform" unoptimized />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="title-container">
-                                                    <h3 className="font-bold text-white title-bounce group-hover:text-[#3AC8BA] transition-colors">{manga.title}</h3>
-                                                </div>
+                                                <ScrollingTitle text={manga.title} className="font-bold text-white group-hover:text-[#3AC8BA] transition-colors" />
                                                 <p className="text-xs text-gray-500 font-medium mt-1">{manga.desc}</p>
                                             </div>
                                         </Link>
@@ -337,27 +334,25 @@ export default function Home() {
                     overflow: hidden;
                 }
                 .group:hover .title-container {
-                    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
-                    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+                    mask-image: linear-gradient(90deg, #000 0%, #000 90%, transparent 100%);
+                    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 90%, transparent 100%);
                 }
                 .title-bounce {
                     display: block;
                     white-space: nowrap;
                     width: 100%;
-                    min-width: 100%;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                    text-align: left;
                 }
                 .group:hover .title-bounce {
                     width: max-content;
-                    overflow: visible;
+                    min-width: 100%;
                     text-overflow: clip;
-                    animation: bounce-text 4s linear infinite alternate;
+                    animation: bounce-text 3s ease-in-out infinite alternate;
                 }
                 @keyframes bounce-text {
-                    0%, 20% { transform: translateX(0); }
-                    80%, 100% { transform: translateX(calc(100cqw - 100%)); }
+                    0%, 15% { transform: translateX(0); }
+                    85%, 100% { transform: translateX(min(0px, calc(100cqw - 100%))); }
                 }
             `}</style>
         </div>

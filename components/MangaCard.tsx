@@ -12,6 +12,8 @@ interface MangaCardProps {
   large?: boolean;
 }
 
+import { ScrollingTitle } from './ScrollingTitle';
+
 export function MangaCard({ title, link, thumb, desc, large = false }: MangaCardProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
   const [mounted, setMounted] = useState(false);
@@ -48,11 +50,7 @@ export function MangaCard({ title, link, thumb, desc, large = false }: MangaCard
         </button>
         {/* Bottom Panel floating */}
         <div className="absolute inset-x-2 bottom-2 bg-[#1A1D24]/80 backdrop-blur-lg rounded-2xl p-3 border border-white/5">
-          <div className="title-container">
-            <h3 className="font-bold text-white title-bounce text-sm">
-              {title}
-            </h3>
-          </div>
+          <ScrollingTitle text={title} className="font-bold text-white text-sm" />
           <p className="text-[10px] text-gray-400 line-clamp-1 mt-0.5 font-medium">
             {desc || 'Komik Update'}
           </p>
